@@ -12,6 +12,8 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -33,5 +35,5 @@ public class ProductDTO {
     @JsonProperty("category_id")
     private String categoryId;
 
-    private MultipartFile files;
+    private List<MultipartFile> files;
 }
