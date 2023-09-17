@@ -23,7 +23,6 @@ import java.util.UUID;
 public class ProductController {
     @PostMapping(value = "",
 	    consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    //POST http://localhost:8088/v1/api/products
     public ResponseEntity<?> createProduct(
 	    @Valid @ModelAttribute ProductDTO productDTO,
 	    BindingResult result
@@ -36,21 +35,22 @@ public class ProductController {
 			.toList();
 		return ResponseEntity.badRequest().body(errorMessages);
 	    }
+	    // Create multipart to get the file
 	    MultipartFile files = productDTO.getFiles();
+	    // Check file is null or not
 	    if(files != null) {
-		// Kiểm tra kích thước file và định dạng
-		if (files.getSize() > 10 * 1024 * 1024) { // Kích thước > 10MB
+		// Check the size of file and format it
+		if(files.getSize() > 10 * 1024 * 1024) {
 		    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
 			    .body("File is too large! Maximum size is 10MB");
 		}
+		// Check file content and load the prefix of image
 		String contentType = files.getContentType();
-		if (contentType == null || !contentType.startsWith("image/")) {
+		if(contentType == null || !contentType.startsWith("image/")) {
 		    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
 			    .body("File must be an image");
 		}
-
-		// Lưu file và cập nhật thumbnail trong DTO
-		String filename = storeFile(files); // Thay thế hàm này với code của bạn để lưu file
+		String filename = storeFile(files);
 	    }
 	    return ResponseEntity.ok("Product created successfully");
 	} catch (Exception e) {
@@ -59,17 +59,12 @@ public class ProductController {
     }
     private String storeFile(MultipartFile file) throws IOException {
 	String filename = StringUtils.cleanPath(file.getOriginalFilename());
-	// Thêm UUID vào trước tên file để đảm bảo tên file là duy nhất
 	String uniqueFilename = UUID.randomUUID().toString() + "_" + filename;
-	// Đường dẫn đến thư mục mà bạn muốn lưu file
 	java.nio.file.Path uploadDir = Paths.get("uploads");
-	// Kiểm tra và tạo thư mục nếu nó không tồn tại
-	if (!Files.exists(uploadDir)) {
+	if(!Files.exists(uploadDir)) {
 	    Files.createDirectories(uploadDir);
 	}
-	// Đường dẫn đầy đủ đến file
 	java.nio.file.Path destination = Paths.get(uploadDir.toString(), uniqueFilename);
-	// Sao chép file vào thư mục đích
 	Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 	return uniqueFilename;
     }
