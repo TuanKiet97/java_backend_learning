@@ -5,38 +5,29 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
-@Table(name = "products")
+@Table(name = "social_account")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product extends BaseEntity {
+public class SocialAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 350)
-    private String name;
+    @Column(name = "provider", length = 20, nullable = false)
+    private String provider;
 
-    private Float price;
+    @Column(name = "provider_id", length = 150)
+    private String providerId;
 
-    @Column(name = "thumbnail", length = 300)
-    private String thumbnail;
-
-    @Column(name = "description")
-    private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Column(name = "email", length = 150)
+    private String email;
 }
