@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -61,7 +62,7 @@ public class ProductController {
 	try {
 	    Product existingProduct = productService.getProductById(productId);
 	    files = files == null ? new ArrayList<MultipartFile>() : files;
-	    if (files.size() > 5) {
+	    if (files.size() > ProductImage.MAXIMUM_IMAGE_PER_PRODUCT) {
 		return ResponseEntity.badRequest().body("Test");
 	    }
 	    List<ProductImage> productImages = new ArrayList<>();
@@ -96,7 +97,10 @@ public class ProductController {
     }
 
     private String storeFile(MultipartFile file) throws IOException {
-	String filename = StringUtils.cleanPath(file.getOriginalFilename());
+	if (isImageFile(file) || file.getOriginalFilename() != null) {
+	    throw new IOException("Invalid image format");
+	}
+	String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 	String uniqueFilename = UUID.randomUUID().toString() + "_" + filename;
 	java.nio.file.Path uploadDir = Paths.get("uploads");
 	if (!Files.exists(uploadDir)) {
@@ -105,6 +109,11 @@ public class ProductController {
 	java.nio.file.Path destination = Paths.get(uploadDir.toString(), uniqueFilename);
 	Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 	return uniqueFilename;
+    }
+
+    private boolean isImageFile(MultipartFile file) {
+	String contentType = file.getContentType();
+	return contentType != null && contentType.startsWith("image/");
     }
 
     @GetMapping("")
