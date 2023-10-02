@@ -33,10 +33,10 @@ public class OrderDTO {
 
     private String address;
 
-    private  String note;
+    private String note;
 
     @JsonProperty("total_money")
-    @Min(value=0, message = "Total money is larger than 0")
+    @Min(value = 0, message = "Total money is larger than 0")
     private Long totalMoney;
 
     @JsonProperty("shipping_method")

@@ -12,29 +12,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@Data
+@Data//toString
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
+
 public class BaseEntity {
     @Column(name = "created_at")
-    private LocalTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-	createdAt = LocalTime.now();
-	updatedAt = LocalTime.now();
+	createdAt = LocalDateTime.now();
+	updatedAt = LocalDateTime.now();
     }
+
     @PreUpdate
     protected void onUpdate() {
-	updatedAt = LocalTime.now();
+	updatedAt = LocalDateTime.now();
     }
 
 }

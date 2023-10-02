@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,12 +46,12 @@ public class User extends BaseEntity {
     private Date dateOfBirth;
 
     @Column(name = "facebook_account_id")
-    private Date facebookAccountId;
+    private int facebookAccountId;
 
     @Column(name = "google_account_id")
-    private Date googleAccountId;
+    private int googleAccountId;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private Role role;
+    private com.project.shopapp.models.Role role;
 }

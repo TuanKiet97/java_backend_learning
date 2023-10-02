@@ -31,7 +31,7 @@ public class OrderController {
 	    BindingResult result
     ) {
 	try {
-	    if(result.hasErrors()) {
+	    if (result.hasErrors()) {
 		List<String> errorMessages = result.getFieldErrors()
 			.stream()
 			.map(FieldError::getDefaultMessage)
@@ -39,14 +39,15 @@ public class OrderController {
 		return ResponseEntity.badRequest().body(errorMessages);
 	    }
 	    return ResponseEntity.ok("Order successfully");
-	}  catch (Exception e) {
+	} catch (Exception e) {
 	    return ResponseEntity.badRequest().body(e.getMessage());
 	}
     }
+
     @GetMapping("/{user_id}")
-    public ResponseEntity<?>  getOrder(@Valid @PathVariable("user_id") Long userId) {
+    public ResponseEntity<?> getOrder(@Valid @PathVariable("user_id") Long userId) {
 	try {
-	    return ResponseEntity.ok("Lay ra danh sach user tu user id");
+	    return ResponseEntity.ok("Get list users from user_id");
 	} catch (Exception e) {
 	    return ResponseEntity.badRequest().body(e.getMessage());
 	}
@@ -58,12 +59,12 @@ public class OrderController {
     public ResponseEntity<?> updateOrder(
 	    @Valid @PathVariable long id,
 	    @Valid @RequestBody OrderDTO orderDTO) {
-	return ResponseEntity.ok("Cập nhật thông tin 1 order");
+	return ResponseEntity.ok("Update the information from order");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrder(
 	    @Valid @PathVariable Long id) {
-	return ResponseEntity.ok("Delete id cho user thannh cong");
+	return ResponseEntity.ok("Delete id for user was successfully");
     }
 }
