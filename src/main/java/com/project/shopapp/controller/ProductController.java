@@ -1,11 +1,15 @@
 package com.project.shopapp.controller;
 
 import com.project.shopapp.dtos.*;
-import com.project.shopapp.exception.DataNotFoundException;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductImage;
+import com.project.shopapp.response.ProductListResponse;
+import com.project.shopapp.response.ProductResponse;
 import com.project.shopapp.services.IProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -117,11 +121,18 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<String> getProducts(
+    public ResponseEntity<ProductListResponse> getProducts(
 	    @RequestParam("page") int page,
 	    @RequestParam("limit") int limit
     ) {
-	return ResponseEntity.ok("getProducts here");
+	PageRequest pageRequest = PageRequest.of (page, limit, Sort.by("createdAt").descending());
+	Page<ProductResponse> productsPage = productService.getAllProducts(pageRequest);
+	int totalPages = productsPage.getTotalPages();
+	List<ProductResponse> products = productsPage.getContent();
+	return ResponseEntity.ok(ProductListResponse.builder()
+			.products(products)
+			.totalPage(totalPages)
+		.build());
     }
 
     //http://localhost:8088/api/v1/products/6
