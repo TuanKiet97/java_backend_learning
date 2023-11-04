@@ -27,7 +27,7 @@ public class ProductService implements IProductService {
     @Override
     public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
 	Category exitsCategory = catetoryRepository.findById(productDTO.getCategoryId())
-		.orElseThrow(()-> new DataNotFoundException("Can not find the category id"+ productDTO.getCategoryId()));
+		.orElseThrow(() -> new DataNotFoundException("Can not find the category id" + productDTO.getCategoryId()));
 	Product newProduct = Product.builder()
 		.name(productDTO.getName())
 		.price(productDTO.getPrice())
@@ -41,30 +41,19 @@ public class ProductService implements IProductService {
     @Override
     public Product getProductById(long productId) throws DataNotFoundException {
 	return productRepository.findById(productId)
-		.orElseThrow(()-> new DataNotFoundException("Can not find product with id" + productId));
+		.orElseThrow(() -> new DataNotFoundException("Can not find product with id: " + productId));
     }
 
     @Override
     public Page<ProductResponse> getAllProducts(PageRequest pageRequest) {
-	return productRepository.findAll(pageRequest).map(product -> {
-	    ProductResponse productResponse = ProductResponse.builder()
-		    .name(product.getName())
-		    .price(product.getPrice())
-		    .thumbnail(product.getThumbnail())
-		    .description(product.getDescription())
-		    .categoryId(product.getId())
-		    .build();
-	    productResponse.setCreatedAt(product.getCreatedAt());
-	    productResponse.setUpdatedAt(product.getUpdatedAt());
-	    return productResponse;
-	});
+	return productRepository.findAll(pageRequest).map(ProductResponse::fromProduct);
     }
 
     @Override
     public Product updateProduct(long id, ProductDTO productDTO) throws DataNotFoundException {
 	Product existsProduct = getProductById(id);
 	Category exitsCategory = catetoryRepository.findById(productDTO.getCategoryId())
-		.orElseThrow(()-> new DataNotFoundException("Can not find the category id"+ productDTO.getCategoryId()));
+		.orElseThrow(() -> new DataNotFoundException("Can not find the category id" + productDTO.getCategoryId()));
 	if (existsProduct != null) {
 	    existsProduct.setName(productDTO.getName());
 	    existsProduct.setCategory(exitsCategory);
@@ -91,13 +80,13 @@ public class ProductService implements IProductService {
     @Override
     public ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws DataNotFoundException, InvalidParamException {
 	Product exitsProduct = productRepository.findById(productId)
-		.orElseThrow(()-> new DataNotFoundException("Can not find the category id"+ productImageDTO.getProductId()));
+		.orElseThrow(() -> new DataNotFoundException("Can not find the category id" + productImageDTO.getProductId()));
 	ProductImage newProductImage = ProductImage.builder()
 		.product(exitsProduct)
 		.imageUrl(productImageDTO.getImageUrl())
 		.build();
 	int size = productImageRepository.findByProductId(productId).size();
-	if (size >= ProductImage.MAXIMUM_IMAGE_PER_PRODUCT ) {
+	if (size >= ProductImage.MAXIMUM_IMAGE_PER_PRODUCT) {
 	    throw new InvalidParamException("Size must be less equal than" + ProductImage.MAXIMUM_IMAGE_PER_PRODUCT);
 	}
 	return productImageRepository.save(newProductImage);

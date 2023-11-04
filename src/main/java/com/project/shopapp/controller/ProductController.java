@@ -139,15 +139,26 @@ public class ProductController {
 
     //http://localhost:8088/api/v1/products/6
     @GetMapping("/{id}")
-    public ResponseEntity<String> getProductById(
-	    @PathVariable("id") String productId
+    public ResponseEntity<?> getProductById(
+	    @PathVariable("id") Long productId
     ) {
-	return ResponseEntity.ok("Product with ID: " + productId);
+	try {
+	    Product existingProduct = productService.getProductById(productId);
+	    return ResponseEntity.ok(ProductResponse.fromProduct(existingProduct));
+	} catch (DataNotFoundException e) {
+	    return ResponseEntity.badRequest().body(e.getMessage());
+	}
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable long id) {
-	return ResponseEntity.ok(String.format("Product with id = %d deleted successfully", id));
+	try {
+	    productService.deleteProduct(id);
+	    return ResponseEntity.ok(String.format("Product with id = %d deleted successfully", id));
+	} catch (Exception e) {
+	    return ResponseEntity.badRequest().body(e.getMessage());
+	}
     }
 
     @PostMapping("/generateFakerProducts")
